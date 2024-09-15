@@ -1,0 +1,25 @@
+{% load static %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Employee</title>
+    <link rel="stylesheet" href="{% static 'css/delete_employee.css' %}">
+    <script>
+        function confirmDelete() {
+            return confirm("Are you sure you want to delete this employee?");
+        }
+    </script>
+</head>
+<body>
+    <div class="delete-container">
+        <h1>Delete Employee</h1>
+        <p>Are you sure you want to delete {{ employee.full_name }}?</p>
+        <form method="post" onsubmit="return confirmDelete();">
+            {% csrf_token %}
+            <button type="submit">Yes, Delete</button>
+            <a href="{% url 'employee_list' %}">No, Go Back</a>
+        </form>
+    </div>
+</body>
+</html>

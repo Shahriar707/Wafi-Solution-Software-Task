@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee List</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <ul class="sidebar-nav">
+                <li>
+                    <a href="{% url 'employee_list' %}">
+                        <i class="fas fa-home"></i>
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'employee_list' %}">
+                        <i class="fas fa-users"></i>
+                        Employees
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'add_employee' %}">
+                        <i class="fas fa-user-plus"></i>
+                        Add Employee
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <h1>Employee List</h1>
+            
+            <form method="get" action="{% url 'employee_list' %}" class="search-form">
+                <input type="text" name="full_name" value="{{ request.GET.full_name }}" placeholder="Full Name">
+                <input type="email" name="email" value="{{ request.GET.email }}" placeholder="Email">
+                <input type="text" name="mobile" value="{{ request.GET.mobile }}" placeholder="Mobile">
+                <input type="date" name="date_of_birth" value="{{ request.GET.date_of_birth }}" placeholder="Date of Birth">
+
+                <button type="submit">Search</button>
+            </form>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th><a href="#">Photo</a></th>
+                        <th><a href="?sort_by=full_name&q={{ query }}">Full Name</a></th>
+                        <th><a href="?sort_by=email&q={{ query }}">Email</a></th>
+                        <th><a href="?sort_by=mobile&q={{ query }}">Mobile</a></th>
+                        <th><a href="?sort_by=date_of_birth&q={{ query }}">Date of Birth</a></th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in page_obj %}
+                    <tr>
+                        <td>
+                            {% if employee.photos %}
+                                <img src="{{ employee.photos.url }}" alt="{{ employee.full_name }}" class="employee-photo">
+                            {% else %}
+                                <img src="{% static 'media/default_profile.jpg' %}" alt="No photo" class="employee-photo">
+                            {% endif %}
+                        </td>
+                        <td>{{ employee.full_name }}</td>
+                        <td>{{ employee.email }}</td>
+                        <td>{{ employee.mobile }}</td>
+                        <td>{{ employee.date_of_birth }}</td>
+                        <td>
+                            <a href="{% url 'edit_employee' employee.id %}"><i class="fa-regular fa-pen-to-square"></i></a>
+                            <a href="{% url 'delete_employee' employee.id %}"><i class="fa-solid fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1&sort_by={{ sort_by }}&q={{ query }}">First</a>
+                        <a href="?page={{ page_obj.previous_page_number }}&sort_by={{ sort_by }}&q={{ query }}">Previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}&sort_by={{ sort_by }}&q={{ query }}">Next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}&sort_by={{ sort_by }}&q={{ query }}">Last</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
